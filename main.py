@@ -196,7 +196,64 @@ def generar_pdf_link(pedido: PedidoPDF):
         "download_url": f"{BASE_URL}/descargar/{filename}"
     })
 
+@app.post("/generar-lote-pdf-link")
+def generar_lote_pdf_link(lote_pdf: LotePDF):
 
+    if not lote_pdf.pedidos:
+        raise HTTPException(
+            status_code=400,
+            detail="Lote sin pedidos"
+        )
+
+    writer_final = PdfWriter()
+
+    for pedido in lote_pdf.pedidos:
+
+        tmp_file = tempfile.NamedTemporaryFile(
+            delete=False,
+            suffix=".pdf"
+        )
+
+        tmp_path = Path(tmp_file.name)
+        tmp_file.close()
+
+        generar_pdf_archivo(
+            pedido,
+            tmp_path
+        )
+
+        reader = PdfReader(str(tmp_path))
+
+        for page in reader.pages:
+            writer_final.add_page(page)
+
+        tmp_path.unlink(missing_ok=True)
+
+    filename = (
+        f"lote_"
+        f"{lote_pdf.lote}_"
+        f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_"
+        f"{uuid4().hex[:8]}.pdf"
+    )
+
+    filename = (
+        filename
+        .replace("/", "-")
+        .replace("\\", "-")
+        .replace(":", "-")
+    )
+
+    output_path = OUTPUT_DIR / filename
+
+    with open(output_path, "wb") as f:
+        writer_final.write(f)
+
+    return JSONResponse({
+        "ok": True,
+        "filename": filename,
+        "download_url": f"{BASE_URL}/descargar/{filename}",
+        "total_pedidos": len(lote_pdf.pedidos)
+    })
 @app.get("/descargar/{filename}")
 def descargar(filename: str):
     safe_name = Path(filename).name
