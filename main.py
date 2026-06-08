@@ -21,7 +21,16 @@ COORD_PATH = ROOT / "COORDENADAS" / "coordenadas_bolado_v3.json"
 OUTPUT_DIR = ROOT / "tmp_pdfs"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
-app = FastAPI(title="FRUTAS BOLADO API")
+
+app = FastAPI(
+    title="FRUTAS BOLADO API",
+    version="1.0.0",
+    servers=[
+        {
+            "url": "https://frutas-bolado-apy.onrender.com"
+        }
+    ]
+)
 
 
 class LineaPedido(BaseModel):
@@ -43,6 +52,7 @@ class PedidoPDF(BaseModel):
 def cargar_coord():
     if not COORD_PATH.exists():
         raise HTTPException(status_code=500, detail="No existe coordenadas_bolado_v3.json")
+
     with open(COORD_PATH, "r", encoding="utf-8") as f:
         return json.load(f)
 
@@ -50,6 +60,7 @@ def cargar_coord():
 def validar_base():
     if not PLANTILLA_PATH.exists():
         raise HTTPException(status_code=500, detail="No existe plantilla oficial")
+
     if not COORD_PATH.exists():
         raise HTTPException(status_code=500, detail="No existe mapa de coordenadas")
 
@@ -59,16 +70,19 @@ def generar_pdf_archivo(pedido: PedidoPDF, output_path: Path):
     coord = cargar_coord()
 
     max_lineas = int(coord.get("MAX_LINEAS", 28))
-    lineas = pedido.lineas
 
-    if not lineas:
+    if not pedido.lineas:
         raise HTTPException(status_code=400, detail="Pedido sin líneas")
 
     observaciones = pedido.observaciones or []
+
     if len(observaciones) > 3:
         raise HTTPException(status_code=400, detail="Máximo 3 líneas de observaciones")
 
-    paginas = [lineas[i:i + max_lineas] for i in range(0, len(lineas), max_lineas)]
+    paginas = [
+        pedido.lineas[i:i + max_lineas]
+        for i in range(0, len(pedido.lineas), max_lineas)
+    ]
 
     writer = PdfWriter()
 
@@ -80,28 +94,28 @@ def generar_pdf_archivo(pedido: PedidoPDF, output_path: Path):
         c = canvas.Canvas(str(overlay_path), pagesize=A4)
 
         c.setFont("Helvetica-Bold", 10.8)
-        c.drawString(coord["CLIENTE_X"], coord["CLIENTE_Y"], pedido.cliente)
+        c.drawString(float(coord["CLIENTE_X"]), float(coord["CLIENTE_Y"]), pedido.cliente)
 
         if pedido.codigo:
             c.setFont("Helvetica-Bold", 10.5)
-            c.drawString(coord["TCODIGO_X"], coord["TCODIGO_Y"], pedido.codigo)
+            c.drawString(float(coord["TCODIGO_X"]), float(coord["TCODIGO_Y"]), pedido.codigo)
 
         if pedido.numero_pedido:
             c.setFont("Helvetica", 9)
-            c.drawString(coord["NPEDIDO_X"], coord["NPEDIDO_Y"], pedido.numero_pedido)
+            c.drawString(float(coord["NPEDIDO_X"]), float(coord["NPEDIDO_Y"]), pedido.numero_pedido)
 
         for idx, linea in enumerate(pagina_lineas):
-            y = coord["LINEA_INICIAL_Y"] - (idx * coord["SALTO_LINEA"])
+            y = float(coord["LINEA_INICIAL_Y"]) - (idx * float(coord["SALTO_LINEA"]))
 
             c.setFont("Helvetica-Bold", 7.35)
-            c.drawString(coord["ARTICULO_X"], y, linea.articulo or "")
+            c.drawString(float(coord["ARTICULO_X"]), y, linea.articulo or "")
 
             c.setFont("Helvetica-Bold", 7.35)
-            c.drawString(coord["BULTOS_X"], y, linea.bultos or "")
+            c.drawString(float(coord["BULTOS_X"]), y, linea.bultos or "")
 
             if linea.precio:
                 c.setFont("Helvetica-Bold", 7.15)
-                c.drawString(coord["PRECIO_X"], y, linea.precio)
+                c.drawString(float(coord["PRECIO_X"]), y, linea.precio)
 
         obs_coords = [
             ("OBS_1_X", "OBS_1_Y"),
@@ -110,14 +124,23 @@ def generar_pdf_archivo(pedido: PedidoPDF, output_path: Path):
         ]
 
         c.setFont("Helvetica-Bold", 7.8)
-        for obs, (x_key, y_key) in zip(observaciones, obs_coords):
-            c.drawString(coord[x_key], coord[y_key], obs)
+        for obs, keys in zip(observaciones, obs_coords):
+            x_key, y_key = keys
+            c.drawString(float(coord[x_key]), float(coord[y_key]), obs)
 
         c.setFont("Helvetica-Bold", 8.5)
-        c.drawString(coord["FECHA_ENTREGA_X"], coord["FECHA_ENTREGA_Y"], pedido.fecha_entrega)
+        c.drawString(
+            float(coord["FECHA_ENTREGA_X"]),
+            float(coord["FECHA_ENTREGA_Y"]),
+            pedido.fecha_entrega
+        )
 
         c.setFont("Helvetica", 7.8)
-        c.drawString(coord["REGISTRO_X"], coord["REGISTRO_Y"], pedido.registro)
+        c.drawString(
+            float(coord["REGISTRO_X"]),
+            float(coord["REGISTRO_Y"]),
+            pedido.registro
+        )
 
         c.save()
 
@@ -147,7 +170,9 @@ def health():
 def generar_pdf(pedido: PedidoPDF):
     filename = f"pedido_{uuid4().hex}.pdf"
     output_path = OUTPUT_DIR / filename
+
     generar_pdf_archivo(pedido, output_path)
+
     return FileResponse(
         path=str(output_path),
         media_type="application/pdf",
