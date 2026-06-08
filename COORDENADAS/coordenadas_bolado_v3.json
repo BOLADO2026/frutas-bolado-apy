@@ -1,42 +1,34 @@
 {
-  "cliente": [
-    90.7,
-    690.17
-  ],
-  "tcodigo": [
-    455.0,
-    736.0
-  ],
-  "pedido": [
-    452.0,
-    690.17
-  ],
-  "articulo_x": 86.6,
-  "bultos_x": 337.2,
-  "precio_x": 520.0,
-  "linea_inicial_y": 629.44,
-  "salto_linea": 19.8,
-  "observaciones": [
-    [
-      72.0,
-      56.0
-    ],
-    [
-      72.0,
-      45.0
-    ],
-    [
-      72.0,
-      34.0
-    ]
-  ],
-  "fecha_entrega": [
-    72.0,
-    22.8
-  ],
-  "registro": [
-    72.0,
-    8.0
-  ],
-  "max_lineas": 28
+  "CLIENTE_X": 90.70,
+  "CLIENTE_Y": 690.17,
+
+  "TCODIGO_X": 455.00,
+  "TCODIGO_Y": 736.00,
+
+  "NPEDIDO_X": 452.00,
+  "NPEDIDO_Y": 690.17,
+
+  "ARTICULO_X": 86.60,
+  "BULTOS_X": 337.20,
+  "PRECIO_X": 520.00,
+
+  "LINEA_INICIAL_Y": 629.44,
+  "SALTO_LINEA": 19.80,
+
+  "OBS_1_X": 72.00,
+  "OBS_1_Y": 56.00,
+
+  "OBS_2_X": 72.00,
+  "OBS_2_Y": 45.00,
+
+  "OBS_3_X": 72.00,
+  "OBS_3_Y": 34.00,
+
+  "FECHA_ENTREGA_X": 72.00,
+  "FECHA_ENTREGA_Y": 22.80,
+
+  "REGISTRO_X": 72.00,
+  "REGISTRO_Y": 8.00,
+
+  "MAX_LINEAS": 28
 }
