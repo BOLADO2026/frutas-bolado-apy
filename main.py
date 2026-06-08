@@ -47,6 +47,9 @@ app = FastAPI(
     title="FRUTAS BOLADO API",
     description="Motor PDF BOLADO: recibe JSON validado por GPT y devuelve PDF sobre plantilla oficial.",
     version="1.0.0",
+    servers=[
+        {"url": "https://frutas-bolado-apy.onrender.com"}
+    ],
 )
 
 
