@@ -1,0 +1,23 @@
+PASOS PARA ESTEBAN / FRUTAS BOLADO
+
+1. Descomprimir este ZIP.
+2. Crear cuenta en GitHub si no existe.
+3. Crear repositorio nuevo: bolado-api.
+4. Subir todo el contenido de la carpeta BOLADO_API_RENDER.
+5. Crear cuenta en Render.
+6. Pulsar New + → Web Service.
+7. Conectar GitHub.
+8. Elegir el repositorio bolado-api.
+9. Render usará render.yaml automáticamente.
+10. Esperar a que despliegue.
+11. Abrir:
+    https://TU-SERVICIO.onrender.com/health
+12. Si devuelve status ok, la API está funcionando.
+13. Abrir:
+    https://TU-SERVICIO.onrender.com/docs
+14. Probar /generar-pdf con el JSON de ejemplo.
+15. Configurar Action del GPT usando openapi_gpt_action.json.
+
+IMPORTANTE:
+El GPT seguirá siendo el cerebro.
+La API sólo imprime el JSON validado sobre la plantilla oficial.

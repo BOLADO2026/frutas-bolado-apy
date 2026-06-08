@@ -1,0 +1,133 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FRUTAS BOLADO API",
+    "version": "1.0.0",
+    "description": "Genera PDFs BOLADO desde JSON validado por GPT."
+  },
+  "servers": [
+    {
+      "url": "https://TU-SERVICIO-RENDER.onrender.com"
+    }
+  ],
+  "paths": {
+    "/generar-pdf": {
+      "post": {
+        "operationId": "generarPdfBolado",
+        "summary": "Generar PDF BOLADO",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Lote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "PDF generado",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "LineaPedido": {
+        "type": "object",
+        "required": [
+          "articulo",
+          "bultos",
+          "precio"
+        ],
+        "properties": {
+          "articulo": {
+            "type": "string"
+          },
+          "bultos": {
+            "type": "string"
+          },
+          "precio": {
+            "type": "string"
+          }
+        }
+      },
+      "Pedido": {
+        "type": "object",
+        "required": [
+          "registro",
+          "cliente",
+          "pedido",
+          "fecha_entrega",
+          "lineas"
+        ],
+        "properties": {
+          "registro": {
+            "type": "string"
+          },
+          "cliente": {
+            "type": "string"
+          },
+          "tcodigo": {
+            "type": "string"
+          },
+          "pedido": {
+            "type": "string"
+          },
+          "fecha_entrega": {
+            "type": "string"
+          },
+          "observaciones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "lineas": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LineaPedido"
+            }
+          }
+        }
+      },
+      "Lote": {
+        "type": "object",
+        "required": [
+          "pedidos"
+        ],
+        "properties": {
+          "nombre_salida": {
+            "type": "string"
+          },
+          "pedidos": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Pedido"
+            }
+          }
+        }
+      }
+    }
+  }
+}
