@@ -1,0 +1,42 @@
+{
+  "cliente": [
+    90.7,
+    690.17
+  ],
+  "tcodigo": [
+    455.0,
+    736.0
+  ],
+  "pedido": [
+    452.0,
+    690.17
+  ],
+  "articulo_x": 86.6,
+  "bultos_x": 337.2,
+  "precio_x": 520.0,
+  "linea_inicial_y": 629.44,
+  "salto_linea": 19.8,
+  "observaciones": [
+    [
+      72.0,
+      56.0
+    ],
+    [
+      72.0,
+      45.0
+    ],
+    [
+      72.0,
+      34.0
+    ]
+  ],
+  "fecha_entrega": [
+    72.0,
+    22.8
+  ],
+  "registro": [
+    72.0,
+    8.0
+  ],
+  "max_lineas": 28
+}
