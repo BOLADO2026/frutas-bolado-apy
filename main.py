@@ -162,6 +162,7 @@ def health():
 def generar_pdf(lote: Lote, x_api_key: Optional[str] = Header(default=None)):
     verificar_clave(x_api_key)
 
+    
     if not lote.pedidos:
         raise HTTPException(status_code=400, detail="El lote no contiene pedidos.")
 
@@ -187,3 +188,46 @@ def root():
         "docs": "/docs",
         "health": "/health"
     })
+from fastapi.responses import FileResponse
+from uuid import uuid4
+
+SALIDAS_DIR = BASE_DIR / "SALIDAS"
+SALIDAS_DIR.mkdir(exist_ok=True)
+
+@app.post("/generar-pdf-link")
+def generar_pdf_link(lote: Lote, x_api_key: Optional[str] = Header(default=None)):
+    verificar_clave(x_api_key)
+
+    if not lote.pedidos:
+        raise HTTPException(status_code=400, detail="El lote no contiene pedidos.")
+
+    pdf_bytes = generar_pdf_lote(lote)
+
+    filename = lote.nombre_salida or "LOTE_BOLADO_GPT.pdf"
+    if not filename.lower().endswith(".pdf"):
+        filename += ".pdf"
+
+    safe_name = f"{uuid4().hex}_{filename}"
+    salida_path = SALIDAS_DIR / safe_name
+
+    with open(salida_path, "wb") as f:
+        f.write(pdf_bytes)
+
+    return {
+        "ok": True,
+        "filename": filename,
+        "download_url": f"https://frutas-bolado-apy.onrender.com/descargar/{safe_name}"
+    }
+
+@app.get("/descargar/{filename}")
+def descargar_pdf(filename: str):
+    path = SALIDAS_DIR / filename
+
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="PDF no encontrado")
+
+    return FileResponse(
+        path,
+        media_type="application/pdf",
+        filename=filename
+    )
