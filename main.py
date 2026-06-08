@@ -48,6 +48,9 @@ class PedidoPDF(BaseModel):
     lineas: List[LineaPedido]
     observaciones: Optional[List[str]] = []
 
+class LotePDF(BaseModel):
+    lote: str
+    pedidos: List[PedidoPDF]
 
 def cargar_coord():
     if not COORD_PATH.exists():
